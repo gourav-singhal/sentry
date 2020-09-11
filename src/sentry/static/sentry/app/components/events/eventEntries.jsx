@@ -207,9 +207,10 @@ class EventEntries extends React.Component {
             <EventCauseEmpty organization={organization} project={project} />
           ) : (
             <EventCause
+              organization={organization}
+              project={project}
               event={event}
-              orgId={organization.slug}
-              projectId={project.slug}
+              group={group}
             />
           ))}
         {event.userReport && group && (
