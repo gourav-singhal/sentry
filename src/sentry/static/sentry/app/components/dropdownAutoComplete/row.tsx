@@ -3,19 +3,21 @@ import styled from '@emotion/styled';
 
 import space from 'app/styles/space';
 
-import {Item, ItemSize, GetItemArgs} from './types';
+import {Item, GetItemArgs} from './types';
+
+type ItemSize = 'zero' | 'small';
 
 type Props = {
   item: Item;
-
   // The index of the element in the array
   index: number;
   // The highlight index according the search
   highlightedIndex: number;
   getItemProps: (args: GetItemArgs) => void;
+  /**
+   * Search field's input value
+   */
   inputValue: string;
-
-  key: any;
 
   /**
    * Size for dropdown items
@@ -28,7 +30,6 @@ const Row = ({
   item,
   style,
   itemSize,
-  key,
   highlightedIndex,
   inputValue,
   getItemProps,
@@ -37,7 +38,7 @@ const Row = ({
 
   if (item?.groupLabel) {
     return (
-      <LabelWithBorder style={style} key={item.id}>
+      <LabelWithBorder style={style}>
         {item.label && <GroupLabel>{item.label}</GroupLabel>}
       </LabelWithBorder>
     );
@@ -46,7 +47,6 @@ const Row = ({
   return (
     <AutoCompleteItem
       itemSize={itemSize}
-      key={key}
       hasGrayBackground={index === highlightedIndex}
       {...getItemProps({item, index, style})}
     >

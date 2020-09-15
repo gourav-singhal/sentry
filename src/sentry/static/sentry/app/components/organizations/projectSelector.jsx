@@ -199,9 +199,6 @@ class ProjectSelector extends React.Component {
       : [];
     return (
       <DropdownAutoComplete
-        alignMenu="left"
-        allowActorToggle
-        closeOnSelect
         blendCorner={false}
         searchPlaceholder={t('Filter projects')}
         onSelect={this.handleSelect}
@@ -220,7 +217,7 @@ class ProjectSelector extends React.Component {
         virtualizedHeight={theme.headerSelectorRowHeight}
         virtualizedLabelHeight={theme.headerSelectorLabelHeight}
         emptyHidesInput={!paginated}
-        inputActions={() => (
+        inputActions={
           <AddButton
             disabled={!hasProjectWrite}
             to={`/organizations/${org.slug}/projects/new/`}
@@ -232,7 +229,7 @@ class ProjectSelector extends React.Component {
           >
             {t('Project')}
           </AddButton>
-        )}
+        }
         menuFooter={renderProps => {
           const renderedFooter =
             typeof menuFooter === 'function' ? menuFooter(renderProps) : menuFooter;
@@ -258,6 +255,8 @@ class ProjectSelector extends React.Component {
           );
         }}
         items={projectList}
+        allowActorToggle
+        closeOnSelect
       >
         {renderProps =>
           children({

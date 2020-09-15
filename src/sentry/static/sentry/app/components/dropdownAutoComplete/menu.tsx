@@ -9,10 +9,8 @@ import LoadingIndicator from 'app/components/loadingIndicator';
 import space from 'app/styles/space';
 
 import List from './list';
-import {ItemSize} from './types';
-import {autoCompleteFilter} from './utils';
-
-type Item = any;
+import {Item} from './types';
+import autoCompleteFilter from './autoCompleteFilter';
 
 type MenuFooterChildProps = {
   actions: Actions;
@@ -57,26 +55,13 @@ type ChildrenArgs = {
   selectedItemIndex?: number;
 };
 
-type Props = {
-  items: Array<Item>;
+type ListProps = React.ComponentProps<typeof List>;
 
+type Props = {
   children: (args: ChildrenArgs) => React.ReactNode;
 
   menuHeader?: React.ReactElement;
   menuFooter?: React.ReactElement | ((props: MenuFooterChildProps) => React.ReactElement);
-
-  /**
-   * Supplying this height will force the dropdown menu to be a virtualized list.
-   * This is very useful (and probably required) if you have a large list. e.g. Project selector with many projects.
-   *
-   * Currently, our implementation of the virtualized list requires a fixed height.
-   */
-  virtualizedHeight?: number;
-
-  /**
-   * If you use grouping with virtualizedHeight, the labels will be that height unless specified here
-   */
-  virtualizedLabelHeight?: number;
 
   /**
    * Hide's the input when there are no items. Avoid using this when querying
@@ -110,11 +95,6 @@ type Props = {
   alignMenu?: 'left' | 'right';
 
   /**
-   * Size for dropdown items
-   */
-  itemSize?: ItemSize;
-
-  /**
    * If this is undefined, autocomplete filter will use this value instead of the
    * current value in the filter input element.
    *
@@ -146,22 +126,12 @@ type Props = {
   /**
    * Props to pass to input/filter component
    */
-  inputProps?: any;
+  inputProps?: Record<string, any>;
 
   /**
    * Should menu visually lock to a direction (so we don't display a rounded corner)
    */
   blendCorner?: boolean;
-
-  /**
-   * Max height of dropdown menu. Units are assumed as `px`
-   */
-  maxHeight?: number;
-
-  /**
-   * Callback for when dropdown menu is being scrolled
-   */
-  onScroll?: () => void;
 
   /**
    * Callback for when dropdown menu opens
@@ -182,6 +152,14 @@ type Props = {
    */
   onSelect?: (item: Item) => void;
 
+  // TODO(ts): Check if it is used somewhere down in the AutoComplete
+  zIndex?: number;
+
+  /**
+   * AutoComplete prop
+   */
+  closeOnSelect?: boolean;
+
   /**
    * renderProp for the end (right side) of the search input
    */
@@ -191,6 +169,11 @@ type Props = {
    * passed down to the AutoComplete Component
    */
   disabled?: boolean;
+
+  /**
+   * Max height of dropdown menu. Units are assumed as `px`
+   */
+  maxHeight?: ListProps['maxHeight'];
 
   /**
    * for passing  styles to the DropdownBubble
@@ -206,9 +189,14 @@ type Props = {
    * for passing simple styles to the root container
    */
   rootClassName?: string;
-};
 
-const Dropdown = ({
+  css?: any;
+} & Pick<
+  ListProps,
+  'virtualizedHeight' | 'virtualizedLabelHeight' | 'itemSize' | 'onScroll' | 'items'
+>;
+
+const Menu = ({
   maxHeight = 300,
   emptyMessage = t('No items'),
   searchPlaceholder = t('Filter search'),
@@ -240,6 +228,8 @@ const Dropdown = ({
   onSelect,
   onOpen,
   onClose,
+  css,
+  closeOnSelect,
   ...props
 }: Props) => {
   return (
@@ -250,6 +240,7 @@ const Dropdown = ({
       onOpen={onOpen}
       onClose={onClose}
       disabled={disabled}
+      closeOnSelect={closeOnSelect}
       resetInputOnClose
       {...props}
     >
@@ -316,7 +307,7 @@ const Dropdown = ({
                 {...getMenuProps({
                   ...menuProps,
                   style,
-                  // css: this.props.css,
+                  css,
                   itemCount,
                   blendCorner,
                   alignMenu,
@@ -380,7 +371,7 @@ const Dropdown = ({
   );
 };
 
-export default Dropdown;
+export default Menu;
 
 const StyledInput = styled(Input)`
   flex: 1;
@@ -417,7 +408,9 @@ const EmptyMessage = styled('div')`
   text-transform: none;
 `;
 
-const AutoCompleteRoot = styled(({isOpen: _isOpen, ...props}) => <div {...props} />)`
+export const AutoCompleteRoot = styled(({isOpen: _isOpen, ...props}) => (
+  <div {...props} />
+))`
   position: relative;
   display: inline-block;
 `;

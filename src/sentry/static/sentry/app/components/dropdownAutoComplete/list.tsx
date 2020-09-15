@@ -2,32 +2,25 @@ import React from 'react';
 import styled from '@emotion/styled';
 import {AutoSizer, List as ReactVirtualizedList, ListRowProps} from 'react-virtualized';
 
-import {Item, ItemSize, GetItemArgs} from './types';
+import {Item} from './types';
 import Row from './row';
+
+type RowProps = Pick<
+  React.ComponentProps<typeof Row>,
+  'itemSize' | 'highlightedIndex' | 'inputValue' | 'getItemProps'
+>;
 
 type Props = {
   // flat item array | grouped item array
   items: Array<Item>;
-
   /**
    * Max height of dropdown menu. Units are assumed as `px`
    */
   maxHeight: number;
-
-  // The highlight index according the search
-  highlightedIndex: number;
-  getItemProps: (args: GetItemArgs) => void;
-
-  /**
-   * Search field's input value
-   */
-  inputValue: string;
-
   /**
    * Callback for when dropdown menu is being scrolled
    */
   onScroll?: () => void;
-
   /**
    * If you use grouping with virtualizedHeight, the labels will be that height unless specified here
    */
@@ -40,12 +33,7 @@ type Props = {
    * Currently, our implementation of the virtualized list requires a fixed height.
    */
   virtualizedHeight?: number;
-
-  /**
-   * Size for dropdown items
-   */
-  itemSize?: ItemSize;
-};
+} & RowProps;
 
 function getHeight(
   items: Array<Item>,
@@ -116,7 +104,7 @@ const List = ({
     <React.Fragment>
       {items.map((item, index) => (
         <Row
-          key={item.value}
+          key={index}
           item={item}
           index={index}
           itemSize={itemSize}

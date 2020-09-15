@@ -1,14 +1,14 @@
 import React from 'react';
 import styled from '@emotion/styled';
 
-import Dropdown from './dropdown';
+import Menu from 'app/components/dropdownAutoComplete/menu';
 
-type DropdownProps = React.ComponentProps<typeof Dropdown>;
+type MenuProps = React.ComponentProps<typeof Menu>;
 
-type Props = DropdownProps & {
+type Props = {
   // Should clicking the actor toggle visibility?
   allowActorToggle?: boolean;
-};
+} & MenuProps;
 
 const DropdownAutoComplete = ({
   alignMenu = 'right',
@@ -16,7 +16,7 @@ const DropdownAutoComplete = ({
   children,
   ...props
 }: Props) => (
-  <Dropdown {...props} alignMenu={alignMenu}>
+  <Menu {...props} alignMenu={alignMenu}>
     {renderProps => {
       const {isOpen, actions, getActorProps} = renderProps;
       // Don't pass `onClick` from `getActorProps`
@@ -33,7 +33,7 @@ const DropdownAutoComplete = ({
         </Actor>
       );
     }}
-  </Dropdown>
+  </Menu>
 );
 
 const Actor = styled('div')<{isOpen: boolean}>`
